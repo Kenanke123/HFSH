@@ -1,0 +1,54 @@
+package AccountManagement
+public
+
+system accountManagement
+	features	
+		getRequest: in data port;
+		sendReply: out data port;	
+	end accountManagement;
+	
+system login
+	features
+		
+getUsername: in data port;
+getPassword: in data port;
+sendReply : out data port;
+
+end login;
+
+system personalDetails
+	features
+getName: in data port;
+getSurname: in data port;
+getAddress: in data port;
+getEmail: in data port;
+getTelephone: in data port;
+sendReply: out data port;
+
+end personaldetails;
+
+system cvDetails	
+	features
+getCV: in data port;
+sendCV: out data port;
+		
+end cvDetails;
+
+system implementation AccountManagement.Impl
+	subcomponents
+	log:system login;
+	persdet:system personalDetails;
+	cvdet:system cvDetails;
+	
+connections
+			connection_1: port log.sendReply -> log.getUsername;
+			connection_2: port log.sendReply -> log.getPassword;
+			connection_3: port persdet.sendReply -> persdet.getName;
+			connection_4: port persdet.sendReply -> persdet.getSurname;
+			connection_5: port persdet.sendReply -> persdet.getAddress;
+			connection_6: port persdet.sendReply -> persdet.getEmail;
+			connection_7: port persdet.sendReply -> persdet.getTelephone;
+			connection_8: port cvdet.sendCV -> cvdet.getCV;	
+	
+end AccountManagement.Impl;
+end AccountManagement;
