@@ -1,0 +1,223 @@
+package syst
+public
+
+system GeneralSystem
+	
+end GeneralSystem;
+
+system implementation GeneralSystem.with_processes
+	
+	subcomponents
+		
+		visitor_interface: process VisitorInterface;
+		user_interface: process UserInterface;
+		employer_interface: process EmployerInterface;
+		au_server: process AuServer;
+		job_search_server: process JobSearchServer;
+		emp_search_server: process EmpSearchServer;
+		load_balancer: process LoadBalancer;
+		processing_server1: process ProcessingServer1;
+		processing_server2: process ProcessingServer2;
+		job_application_server: process JobApplicationServer;
+		company_db: process CompanyDB;
+		employee_db: process EmployeeDB;
+		employer_db: process EmployerDB;
+		
+	connections
+		
+		login_conn: port visitor_interface.send_login_data->au_server.get_login_data;
+		confirm_login_conn: port au_server.send_confirmation->visitor_interface.confirm_login;
+		start_u_interface_conn: port visitor_interface.start_user_interface->user_interface.start;
+		start_e_interface_conn: port visitor_interface.start_employer_interface->employer_interface.start;
+		search_job_conn: port user_interface.search_job->company_db.get_searched_job;
+		recommend_job_conn: port job_search_server.reccomend_job->user_interface.show_reccomended_job;
+		recommend_employee_conn: port emp_search_server.reccomend_employee->employer_interface.show_reccomended_employee;
+		upload_insider_info_conn1: port user_interface.upload_insider_info->processing_server1.get_insider;
+		upload_insider_info_conn2: port user_interface.upload_insider_info->processing_server2.get_insider;
+		search_worker_conn: port employer_interface.search_worker->company_db.get_searched_workers;
+		search_job_conn2: port employer_interface.search_job->company_db.get_searched_job;
+		upload_job_listing_conn: port employer_interface.upload_job_listing->company_db.get_job_listing;
+		send_user_data_conn1: port au_server.send_user_data->processing_server1.get;
+		send_user_data_conn2: port au_server.send_user_data->processing_server2.get;
+		send_employer_data_conn: port au_server.send_employer_data->employer_db.get_employer_data;
+		confirm_user_conn: port employee_db.send_confirmation->au_server.confirm_user;
+		confirm_employer_conn: port employer_db.send_confirmation->au_server.confirm_employer;
+		upload_to_user_db_conn1: port processing_server1.upload_to_user_db->employee_db.get;
+		upload_to_user_db_conn2: port processing_server2.upload_to_user_db->employee_db.get;
+		upload_to_company_db_conn1: port processing_server1.upload_to_company_db->company_db.get_insider_info;
+		upload_to_company_db_conn2: port processing_server2.upload_to_company_db->company_db.get_insider_info;
+		send_employee_applied_conn: port job_application_server.send_employee_applied->employer_interface.get_apllied_employee;
+		send_job_invite_conn: port job_application_server.send_job_invite->user_interface.get_job_invitation;
+		send_to_server_conn1: port load_balancer.send_to_server->processing_server1.get;
+		send_to_server_conn2: port load_balancer.send_to_server->processing_server2.get;
+		
+		
+end GeneralSystem.with_processes;
+
+process VisitorInterface
+	features
+		send_login_data: out data port;
+		confirm_login: in event port;
+		start_user_interface: out event port;
+		start_employer_interface: out event port;
+	
+end VisitorInterface;
+
+process implementation VisitorInterface.impl
+	
+end VisitorInterface.impl;
+
+process UserInterface
+	features
+		search_job: out data port; 
+		show_reccomended_job: in data port;
+		upload_insider_info: out data port;
+		start: in event port;
+		get_job_invitation: in data port;
+	
+end userInterface;
+
+process implementation UserInterface.impl
+	
+end UserInterface.impl;
+
+process EmployerInterface
+	features
+		search_worker: out data port;
+		search_job: out data port; 
+		upload_job_listing: out data port;
+		upload_insider_info: out data port;
+		show_reccomended_employee: in data port;
+		start: in event port;
+		get_apllied_employee: in data port;
+				 
+	
+end EmployerInterface;
+
+process implementation EmployerInterface.impl
+	
+end EmployerInterface.impl;
+
+process AuServer
+	features
+		confirm_user: in event port;
+		confirm_employer: in event port;
+		send_user_data:out data port;
+		send_employer_data: out data port;
+		get_login_data: in data port;
+		send_confirmation:out event port;
+	
+end AuServer;
+
+process implementation AuServer.impl
+	
+end AuServer.impl;
+
+process JobSearchServer
+	features
+		reccomend_job: out data port;
+	
+end JobSearchServer;
+
+process implementation JobSearchServer.impl
+	
+end JobSearchServer.impl;
+
+process EmpSearchServer
+	features
+		reccomend_employee: out data port;
+	
+end EmpSearchServer;
+
+process implementation EmpSearchServer.impl
+	
+end EmpSearchServer.impl;
+
+process LoadBalancer
+	features
+		send_to_server: out data port;
+	
+end LoadBalancer;
+
+process implementation LoadBalancer.impl
+	
+end LoadBalancer.impl;
+
+process ProcessingServer1
+	features
+		upload_to_user_db: out data port;
+		upload_to_company_db: out data port;
+		get: in data port;
+		get_insider: in data port;
+	
+end ProcessingServer1;
+
+process implementation ProcessingServer1.impl
+	
+end ProcessingServer1.impl;
+
+process ProcessingServer2
+	features
+		upload_to_user_db: out data port;
+		upload_to_company_db: out data port;
+		get: in data port;
+		get_insider: in data port;
+	
+end ProcessingServer2;
+
+process implementation ProcessingServer2.impl
+	
+end ProcessingServer2.impl;
+
+process JobApplicationServer
+	features
+		send_employee_applied: out data port;
+		send_job_invite: out data port;
+	
+end JobApplicationServer;
+
+process implementation JobApplicationServer.impl
+	
+end JobApplicationServer.impl;
+
+process CompanyDB
+	features
+		get_searched_job: in data port;
+		get_insider_info: in data port;
+		get_searched_workers: in data port;
+		get_job_listing: in data port;
+
+	
+end CompanyDB;
+
+process implementation CompanyDB.impl
+	
+end CompanyDB.impl;
+
+process EmployeeDB
+	features
+		get_user_data: in data port;
+		send_confirmation: out event port;
+		get: in data port;
+		
+	
+end EmployeeDB;
+
+process implementation EmployeeDB.impl
+	
+end EmployeeDB.impl;
+
+process EmployerDB
+	features
+		get_employer_data: in data port;
+		send_confirmation: out event port;
+	
+end EmployerDB;
+
+process implementation EmployerDB.impl
+	
+end EmployerDB.impl;
+
+
+
+end syst;
